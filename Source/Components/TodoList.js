@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, Modal} from 'react-native';
+import {View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from "react-native-responsive-screen";
 import Icon from 'react-native-vector-icons/Entypo';
 import COLORS from '../Constants/Colors';
+import Modal from "react-native-modal";
 
 const toDoListArray = [
     {
@@ -31,9 +32,26 @@ function toDoListViewDesign() {
 }
 
 export default function TodoList() {
+
+    const [isModalVisible, setModalVisible] = useState(false);
+
+    function toggleModal() {
+        setModalVisible(!isModalVisible)
+    }
+
     return(
         <SafeAreaView style={{flex: 1}}>
             <View style={styles.mainContainer}>
+                <Modal isVisible={isModalVisible}>
+                    <View style={{flex: 0.3, backgroundColor: 'green'}}>
+                        <TouchableOpacity
+                            style={{height: 50, width: 50, backgroundColor: 'red'}}
+                            onPress={() => toggleModal()}>
+                            <Text>Hide Model</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Modal>
+
                 <View style={styles.headerContainer}>
                     <Text style={styles.headerText}>{'All Tasks'}</Text>
                 </View>
@@ -46,8 +64,8 @@ export default function TodoList() {
                         showsVerticalScrollIndicator={false} />
 
                     <View style={styles.floatingButtonMainContainer}>
-                        <TouchableOpacity style={styles.floatingButtonView}>
-                                <Icon name="plus" size={40} color={'white'}/>
+                        <TouchableOpacity style={styles.floatingButtonView} onPress={() => toggleModal()}>
+                             <Icon name="plus" size={40} color={'white'}/>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -116,7 +134,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.20,
     },
     floatingButtonMainContainer: {
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: 'blue',
     },
     floatingButtonView: {
         height:hp('8'),
@@ -126,6 +145,6 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         position: 'absolute',
         bottom: 10,
-        backgroundColor: COLORS.blueFloatingButton
+        backgroundColor: COLORS.blueFloatingButton,
     }
 });
