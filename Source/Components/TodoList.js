@@ -1,54 +1,65 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity} from 'react-native';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from "react-native-responsive-screen";
+import {View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, TextInput} from 'react-native';
+import {heightPercentageToDP as hp} from "react-native-responsive-screen";
 import Icon from 'react-native-vector-icons/Entypo';
 import COLORS from '../Constants/Colors';
 import Modal from "react-native-modal";
 
-const toDoListArray = [
-    {
-        id: '001',
-        title: 'Mausami',
-    },
-    {
-        id: '002',
-        title: 'Kalgi',
-    }
-];
-
-function toDoListViewDesign() {
-    return (
-        <View style={styles.listMainView}>
-            <View style={styles.listTextContainer}>
-                <Text style={styles.listTextView}>{'Learn React-Native'}</Text>
-            </View>
-            <View style={styles.listCheckBoxContainer}>
-                <View style={styles.listCheckBoxView}>
-                    <Icon name="check" size={20} color="white" />
-                </View>
-            </View>
-        </View>
-    );
-}
-
 export default function TodoList() {
 
+    const [toDoListArray, setToDoListArray] = useState([]);
     const [isModalVisible, setModalVisible] = useState(false);
+    const [TaskName, setTaskName] = useState('');
 
     function toggleModal() {
         setModalVisible(!isModalVisible)
+    }
+
+    function addNewTaskBtnPressed() {
+        if (TaskName === ''){
+            alert('Please Add New Task')
+        } else {
+            setToDoListArray([{title: TaskName}, ...toDoListArray])
+            toggleModal()
+        }
+    }
+
+    function toDoListViewDesign({item, index}) {
+        return (
+            <View style={styles.listMainView}>
+                <View style={styles.listTextContainer}>
+                    <Text style={styles.listTextView}>{item.title}</Text>
+                </View>
+                <View style={styles.listCheckBoxContainer}>
+                    <View style={styles.listCheckBoxView}>
+                        <Icon name="check" size={20} color="white" />
+                    </View>
+                </View>
+            </View>
+        );
     }
 
     return(
         <SafeAreaView style={{flex: 1}}>
             <View style={styles.mainContainer}>
                 <Modal isVisible={isModalVisible}>
-                    <View style={{flex: 0.3, backgroundColor: 'green'}}>
-                        <TouchableOpacity
-                            style={{height: 50, width: 50, backgroundColor: 'red'}}
-                            onPress={() => toggleModal()}>
-                            <Text>Hide Model</Text>
-                        </TouchableOpacity>
+                    <View style={styles.popUpContainer}>
+                        <TextInput style={styles.popupTextInput}
+                                   onChangeText={(value) => {
+                                       setTaskName(value)
+                                   }} />
+                        <View style={{flexDirection: 'row', flex: 1}}>
+                            <TouchableOpacity
+                                style={{flex: 0.5, margin: hp('2'), justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.blueFloatingButton, borderRadius: hp('1')}}
+                                onPress={() => toggleModal()}>
+                                <Text style={{fontSize: hp('2.5'), color: 'white'}}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={{flex: 0.5, margin: hp('2') , justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.blueFloatingButton, borderRadius: hp('1')}}
+                                onPress={() => addNewTaskBtnPressed()}>
+                                <Text style={{fontSize: hp('2.5'), color: 'white'}}>Add</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </Modal>
 
@@ -60,7 +71,7 @@ export default function TodoList() {
                     <FlatList
                         style={styles.listContainer}
                         data={toDoListArray}
-                        renderItem={() => toDoListViewDesign()}
+                        renderItem={toDoListViewDesign}
                         showsVerticalScrollIndicator={false} />
 
                     <View style={styles.floatingButtonMainContainer}>
@@ -135,7 +146,6 @@ const styles = StyleSheet.create({
     },
     floatingButtonMainContainer: {
         alignItems: 'center',
-        backgroundColor: 'blue',
     },
     floatingButtonView: {
         height:hp('8'),
@@ -146,5 +156,25 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 10,
         backgroundColor: COLORS.blueFloatingButton,
+    },
+    popUpContainer:{
+        flex: 0.18,
+        backgroundColor: 'white',
+        borderRadius: hp('2')
+    },
+    popupTextInput: {
+        height: hp('6'),
+        marginLeft: hp('2'),
+        marginRight: hp('2'),
+        marginTop: hp('2'),
+        borderRadius: hp('1'),
+        backgroundColor: 'white',
+        fontSize: hp('2'),
+        shadowOffset: {
+            width: 2,
+            height: 2
+        },
+        shadowColor: 'black',
+        shadowOpacity: 0.50
     }
 });
