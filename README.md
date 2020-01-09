@@ -1,4 +1,5 @@
 # ToDoReactApp
 
-To run project run following command to root directory of project.
+To run project run following command in terminal.
+
 yarn install
