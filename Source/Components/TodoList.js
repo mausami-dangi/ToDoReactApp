@@ -10,6 +10,7 @@ export default function TodoList() {
     const [toDoListArray, setToDoListArray] = useState([]);
     const [isModalVisible, setModalVisible] = useState(false);
     const [TaskName, setTaskName] = useState('');
+    const [checkBoxColor, setCheckBoxColor] = useState(COLORS.greenCheckBox);
 
     function toggleModal() {
         setModalVisible(!isModalVisible)
@@ -24,6 +25,14 @@ export default function TodoList() {
         }
     }
 
+    function changeIconColor() {
+        if (checkBoxColor === 'white') {
+            setCheckBoxColor(COLORS.greenCheckBox);
+        } else {
+            setCheckBoxColor('white');
+        }
+    }
+
     function toDoListViewDesign({item, index}) {
         return (
             <View style={styles.listMainView}>
@@ -31,9 +40,9 @@ export default function TodoList() {
                     <Text style={styles.listTextView}>{item.title}</Text>
                 </View>
                 <View style={styles.listCheckBoxContainer}>
-                    <View style={styles.listCheckBoxView}>
-                        <Icon name="check" size={20} color="white" />
-                    </View>
+                    <TouchableOpacity style={[styles.listCheckBoxView, {backgroundColor: checkBoxColor && checkBoxColor === 'white' && COLORS.greenCheckBox || 'white'}]} onPress={changeIconColor}>
+                        <Icon name="check" size={15} color={'white'} />
+                    </TouchableOpacity>
                 </View>
             </View>
         );
@@ -104,18 +113,21 @@ const styles = StyleSheet.create({
         marginBottom: hp('1')
     },
     listMainView: {
-        height: hp('7'),
-        marginLeft: hp('1'),
-        marginRight: hp('1'),
+        padding: hp('2'),
+        borderRadius: hp('7'),
+        minHeight: hp('7'),
+        marginLeft: hp('2'),
+        marginRight: hp('2'),
         backgroundColor: 'white',
         shadowOffset: {
             width: 0,
             height: 2
         },
         shadowColor: 'black',
-        shadowOpacity: 0.20,
+        shadowOpacity: 0.45,
         flexDirection: 'row',
-        marginTop: hp('1')
+        marginTop: hp('1'),
+
     },
     listTextContainer: {
         flex: 0.90,
@@ -134,15 +146,15 @@ const styles = StyleSheet.create({
     listCheckBoxView: {
         height: hp('3.5'),
         width: hp('3.5'),
-        backgroundColor: COLORS.greenCheckBox,
         justifyContent: 'center',
         alignItems: 'center',
         shadowOffset: {
-            width: 2,
+            width: 0,
             height: 2
         },
         shadowColor: 'black',
-        shadowOpacity: 0.20,
+        shadowOpacity: 0.45,
+        borderRadius: hp('3.5')
     },
     floatingButtonMainContainer: {
         alignItems: 'center',
