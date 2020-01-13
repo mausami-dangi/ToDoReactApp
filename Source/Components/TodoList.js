@@ -1,91 +1,144 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, TextInput} from 'react-native';
-import {heightPercentageToDP as hp} from "react-native-responsive-screen";
+import React, { useState } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    SafeAreaView,
+    FlatList,
+    TouchableOpacity,
+    TextInput
+} from 'react-native';
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import Icon from 'react-native-vector-icons/Entypo';
 import COLORS from '../Constants/Colors';
 import Modal from "react-native-modal";
 
-export default function TodoList() {
+export default TodoList = () => {
 
     const [toDoListArray, setToDoListArray] = useState([]);
     const [isModalVisible, setModalVisible] = useState(false);
-    const [TaskName, setTaskName] = useState('');
-    const [checkBoxColor, setCheckBoxColor] = useState(COLORS.greenCheckBox);
+    const [taskName, setTaskName] = useState('');
 
-    function toggleModal() {
+    const toggleModal = () => {
         setModalVisible(!isModalVisible)
+        setTaskName('')
     }
 
-    function addNewTaskBtnPressed() {
-        if (TaskName === ''){
-            alert('Please Add New Task')
+    const addNewTaskBtnPressed = () => {
+        if (taskName === '') {
+            alert('Please insert value for task name')
         } else {
-            setToDoListArray([{title: TaskName}, ...toDoListArray])
+            setToDoListArray([
+                ...toDoListArray.map((item, index) => {
+                    item.key = 'item-' + index
+                    return item
+                }),
+                {
+                    key: 'item-' + toDoListArray.length,
+                    title: taskName,
+                    isCompleted: false
+                }
+            ])
             toggleModal()
         }
     }
 
-    function changeIconColor() {
-        if (checkBoxColor === 'white') {
-            setCheckBoxColor(COLORS.greenCheckBox);
-        } else {
-            setCheckBoxColor('white');
-        }
+    const markAsCompleted = (itemKey) => {
+        setToDoListArray(toDoListArray.map((item) => {
+            if (item.key === itemKey) {
+                item.isCompleted = !item.isCompleted
+            }
+            return item
+        }))
     }
 
-    function toDoListViewDesign({item, index}) {
+    const toDoListViewDesign = ({ item, index }) => {
         return (
             <View style={styles.listMainView}>
                 <View style={styles.listTextContainer}>
-                    <Text style={styles.listTextView}>{item.title}</Text>
+                    <Text style={styles.listTextView}>
+                        {item.title}
+                    </Text>
                 </View>
                 <View style={styles.listCheckBoxContainer}>
-                    <TouchableOpacity style={[styles.listCheckBoxView, {backgroundColor: checkBoxColor && checkBoxColor === 'white' && COLORS.greenCheckBox || 'white'}]} onPress={changeIconColor}>
-                        <Icon name="check" size={15} color={'white'} />
+                    <TouchableOpacity style={[
+                        styles.listCheckBoxView,
+                        {
+                            backgroundColor: item.isCompleted ? COLORS.greenCheckBox : 'white'
+                        }]}
+                        onPress={() => markAsCompleted("item-" + index)}>
+                        <Icon name="check"
+                            size={15}
+                            color={'white'} />
                     </TouchableOpacity>
                 </View>
             </View>
-        );
+        )
     }
 
-    return(
-        <SafeAreaView style={{flex: 1}}>
+    return (
+        <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.mainContainer}>
                 <Modal isVisible={isModalVisible}>
                     <View style={styles.popUpContainer}>
                         <TextInput style={styles.popupTextInput}
-                                   onChangeText={(value) => {
-                                       setTaskName(value)
-                                   }} />
-                        <View style={{flexDirection: 'row', flex: 1}}>
-                            <TouchableOpacity
-                                style={{flex: 0.5, margin: hp('2'), justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.blueFloatingButton, borderRadius: hp('1')}}
-                                onPress={() => toggleModal()}>
-                                <Text style={{fontSize: hp('2.5'), color: 'white'}}>Cancel</Text>
+                            placeholder="Task name"
+                            value={taskName}
+                            onChangeText={(value) => {
+                                setTaskName(value)
+                            }} />
+                        <View style={{
+                            flexDirection: 'row',
+                            flex: 1
+                        }}>
+                            <TouchableOpacity onPress={() => toggleModal()}
+                                style={{
+                                    flex: 0.5,
+                                    margin: hp('2'),
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundColor: COLORS.blueFloatingButton,
+                                    borderRadius: hp('1')
+                                }}>
+                                <Text style={{
+                                    fontSize: hp('2.5'),
+                                    color: 'white'
+                                }}>Cancel</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                style={{flex: 0.5, margin: hp('2') , justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.blueFloatingButton, borderRadius: hp('1')}}
-                                onPress={() => addNewTaskBtnPressed()}>
-                                <Text style={{fontSize: hp('2.5'), color: 'white'}}>Add</Text>
+                            <TouchableOpacity onPress={() => addNewTaskBtnPressed()}
+                                style={{
+                                    flex: 0.5,
+                                    margin: hp('2'),
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundColor: COLORS.blueFloatingButton,
+                                    borderRadius: hp('1')
+                                }}>
+                                <Text style={{
+                                    fontSize: hp('2.5'),
+                                    color: 'white'
+                                }}>Add</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </Modal>
 
                 <View style={styles.headerContainer}>
-                    <Text style={styles.headerText}>{'All Tasks'}</Text>
+                    <Text style={styles.headerText}>All Tasks</Text>
                 </View>
 
                 <View style={styles.middleContainer}>
-                    <FlatList
-                        style={styles.listContainer}
+                    <FlatList style={styles.listContainer}
                         data={toDoListArray}
                         renderItem={toDoListViewDesign}
                         showsVerticalScrollIndicator={false} />
 
                     <View style={styles.floatingButtonMainContainer}>
-                        <TouchableOpacity style={styles.floatingButtonView} onPress={() => toggleModal()}>
-                             <Icon name="plus" size={40} color={'white'}/>
+                        <TouchableOpacity style={styles.floatingButtonView}
+                            onPress={() => toggleModal()}>
+                            <Icon name="plus"
+                                size={40}
+                                color={'white'} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -137,7 +190,7 @@ const styles = StyleSheet.create({
     listTextView: {
         fontSize: hp('2.3')
     },
-    listCheckBoxContainer:{
+    listCheckBoxContainer: {
         flex: 0.10,
         marginRight: hp('2'),
         justifyContent: 'center',
@@ -160,16 +213,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     floatingButtonView: {
-        height:hp('8'),
-        width:hp('8'),
-        borderRadius:hp('8'),
-        alignItems:'center',
-        justifyContent:'center',
+        height: hp('8'),
+        width: hp('8'),
+        borderRadius: hp('8'),
+        alignItems: 'center',
+        justifyContent: 'center',
         position: 'absolute',
         bottom: 10,
         backgroundColor: COLORS.blueFloatingButton,
     },
-    popUpContainer:{
+    popUpContainer: {
         flex: 0.18,
         backgroundColor: 'white',
         borderRadius: hp('2')
@@ -186,6 +239,8 @@ const styles = StyleSheet.create({
             width: 2,
             height: 2
         },
+        paddingLeft: 15,
+        paddingRight: 15,
         shadowColor: 'black',
         shadowOpacity: 0.50
     }
